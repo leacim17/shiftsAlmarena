@@ -6,7 +6,20 @@ import cors from "cors";
 import generar from "./generarArchivo.js";
 
 const app = express();
-const PORT = 3321;
+
+// Middleware para servir archivos estáticos (HTML, CSS, JS, imágenes)
+app.use(express.static(path.join(__dirname, "public")));
+
+// Ruta principal (opcional, porque express.static ya devuelve index.html automáticamente)
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+// Puerto dinámico (Render lo define en process.env.PORT)
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en puerto ${PORT}`);
+});
 
 app.use(cors());
 
