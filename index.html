@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shifts Breakfast</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Hola, vengo a ayudarte</h1>
+        <p class="subtitle">Sube tus archivos de manera simple y rápida</p>
+        
+        <div class="upload-section">
+            <div class="drop-zone" id="breakfast-zone">
+                <div class="drop-zone-icon">🍳</div>
+                <div class="drop-zone-title">Reporte de Desayuno</div>
+                <div class="drop-zone-text">Arrastra tu archivo aquí o haz clic para seleccionar</div>
+                <input type="file" class="file-input" name="reporte" id="breakfast-input" accept=".pdf,.doc,.docx,.txt,.csv,.xlsx,.xls">
+            </div>
+            
+            <div class="drop-zone" id="shifts-zone">
+                <div class="drop-zone-icon">📋</div>
+                <div class="drop-zone-title">Listado de Turnos</div>
+                <div class="drop-zone-text">Arrastra tu archivo aquí o haz clic para seleccionar</div>
+                <input type="file" class="file-input" name="turnos" id="shifts-input" accept=".pdf,.doc,.docx,.txt,.csv,.xlsx,.xls">
+            </div>
+        </div>
+        
+        <div class="submit-section">
+            <button class="submit-btn" id="submit-btn">
+                <span class="btn-text">Enviar</span>
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <span>Enviando...</span>
+                </div>
+            </button>
+        </div>
+        
+        <div class="success-message" id="success-message">
+            ¡Archivos enviados correctamente!
+        </div>
+    </div>
+
+    <!-- Agregando footer con copyright -->
+    <footer class="footer">
+        <p>&copy; 2025. Developed by: <strong>@leacim.dev</strong></p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
