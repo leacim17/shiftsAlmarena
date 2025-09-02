@@ -112,7 +112,7 @@
                     }
 
                     // Replace 'YOUR_API_ENDPOINT' with your actual API URL
-                    const response = await fetch('http://127.0.0.1:3000/uploads', {
+                    const response = await fetch('https://turnosdesayuno.onrender.com/uploads', {
                         method: 'POST',
                         body: formData
                     });
@@ -180,4 +180,5 @@
         // Initialize the uploader when the page loads
         document.addEventListener('DOMContentLoaded', () => {
             new FileUploader();
+
         });
