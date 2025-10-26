@@ -214,8 +214,7 @@
             async downloadFiles() {
                 try {
                     // Replace with your actual API URL
-
-                    const res = await fetch('https://turnosdesayuno.onrender.com/downloadReporte', {
+                    const response = await fetch('https://turnosdesayuno.onrender.com/downloadReporte', {
                         method: 'GET'
                     });
                     /*
@@ -324,4 +323,5 @@ async function wakeUpServer(){
         wakeUpServer();
         setDateInput();
     });
+
 
