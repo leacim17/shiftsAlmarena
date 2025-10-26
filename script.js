@@ -3,13 +3,15 @@
                 this.files = {
                     breakfast: null,
                     shifts: null
-                };
+                }, 
+                this.fechaInicio;
                 this.init();
             }
 
             init() {
                 this.setupDropZones();
                 this.setupSubmitButton();
+                this.setupDownloadButton();
             }
 
             setupDropZones() {
@@ -80,12 +82,60 @@
 
             setupSubmitButton() {
                 const submitBtn = document.getElementById('submit-btn');
-                
-                submitBtn.addEventListener('click', () => {
+                const downloadBtn = document.getElementById('download-btn');
+                submitBtn.addEventListener('click', (e) => {
+                     e.preventDefault();
+                     downloadBtn.removeAttribute('disabled');
                     if (this.files.breakfast || this.files.shifts) {
-                        this.submitFiles();
+                        this.submitFiles(); 
                     }
                 });
+            }
+
+            setupDownloadButton() {
+                const downloadBtn = document.getElementById('download-btn');
+                downloadBtn.addEventListener('click', () => {
+                        this.downloadFiles();
+                });
+            }
+
+            showAlert(type, time, message) {
+                const alertContainer = document.getElementById('alert-container');
+                const alert = document.getElementById('alert');
+                const alertIcon = document.getElementById('alert-icon');
+                const alertMessage = document.getElementById('alert-message');
+
+                // Limpiar clases previas
+                alert.classList.remove('alert-error', 'alert-warning', 'alert-success');
+
+                // Configurar según el tipo
+                switch (type){
+                    case "error": 
+                        alert.classList.add('alert-error');
+                        alertIcon.textContent = '❌​';
+                        break;
+                    case "warning":
+                        alert.classList.add('alert-warning');
+                        alertIcon.textContent = '⚠️​';
+                        break;
+                    case "success":
+                        alert.classList.add('alert-success');
+                        alertIcon.textContent = '✅​';
+                        break;
+                    default: 
+                        alert.classList.add('alert-error');
+                        alertIcon.textContent = '❌​';
+                        break;
+
+                }
+
+                alertMessage.textContent = message;
+                alertContainer.style.display = 'block';
+
+                // Auto-ocultar después de 5 segundos
+                setTimeout(() => {
+                    alertContainer.style.display = 'none';
+                }, time);
             }
 
             async submitFiles() {
@@ -97,7 +147,6 @@
                 // Show loading state
                 btnText.style.display = 'none';
                 loading.style.display = 'flex';
-                submitBtn.disabled = true;
 
                 try {
                     // Simulate API call - replace with your actual API endpoint
@@ -111,18 +160,72 @@
                         formData.append('turnos', this.files.shifts);
                     }
 
-                    // Replace 'YOUR_API_ENDPOINT' with your actual API URL
-                    const response = await fetch('https://turnosdesayuno.onrender.com/uploads', {
+                    const dateInput = document.getElementById('report-date');
+                    formData.append('fechaInicio', dateInput.value);
+
+                    // Replace with your actual API URL
+                    const res = await fetch('https://turnosdesayuno.onrender.com/uploads', {
                         method: 'POST',
                         body: formData
                     });
+                   /*
+                    const res = await fetch('http://127.0.0.1:3000/uploads', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    */
+                    const data = await res.json();
 
-                    if (!response.ok) throw new Error("Error en la respuesta");
+                    if(data.errorReporte == true){
+                        uploaderInstance.showAlert('error', 10000, "El archivo del reporte de desayuno esta mal nombrado o es de un formato que no corresponde");
+                    }
 
+                    if(data.errorTurnos == true){
+                        uploaderInstance.showAlert('error', 10000, "El archivo del listado de turnos esta mal nombrado o es de un formato que no corresponde");
+                    }
+                    
+                    if(data.errorPax.length){
+                        uploaderInstance.showAlert('warning', 10000, "Hay una diferencia en la cantidad de pasajeros entre el reporte y el listado de turnos en las habitaciones: " + data.errorPax.join(", "));
+                    }
+
+                    if(data.errorReporte == false && data.errorTurnos == false && !data.errorPax.length){
+                        uploaderInstance.showAlert('success', 3000, "¡Reporte generado con exito y sin errores!");
+                    }
+                
+                    
+                    if (!res.ok) throw new Error("Error en la respuesta");
+                    
+                    // Reset form after success
+                    setTimeout(() => {
+                        this.resetForm();
+                    }, 5000);
+
+
+                } catch (error) {
+                    console.error('Error uploading files:', error);
+                    alert('Error al enviar los archivos. Por favor, intenta nuevamente.');
+                } finally {
+                    // Reset button state
+                    btnText.style.display = 'inline';
+                    loading.style.display = 'none';
+                }
+            }
+
+            async downloadFiles() {
+                try {
+                    // Replace with your actual API URL
+
+                    const res = await fetch('https://turnosdesayuno.onrender.com/downloadReporte', {
+                        method: 'GET'
+                    });
+                    /*
+                    const response = await fetch('http://127.0.0.1:3000/downloadReporte', {
+                        method: 'GET'
+                    });
+                    */
                     const blob = await response.blob();
                     const url = window.URL.createObjectURL(blob);
-
-
+                    
                     // Crear link temporal y simular click
                     const a = document.createElement("a");
                     a.href = url;
@@ -132,28 +235,22 @@
                     a.remove();
                     window.URL.revokeObjectURL(url);
 
+                    if (!response.ok) throw new Error("Error en la respuesta");
+
                     // Simulate API delay
                     await new Promise(resolve => setTimeout(resolve, 2000));
 
-                    // Show success
-                    successMessage.style.display = 'block';
-                    
                     // Reset form after success
                     setTimeout(() => {
                         this.resetForm();
-                    }, 2000);
+                    }, 5000);
 
                 } catch (error) {
-                    console.error('Error uploading files:', error);
-                    alert('Error al enviar los archivos. Por favor, intenta nuevamente.');
-                } finally {
-                    // Reset button state
-                    btnText.style.display = 'inline';
-                    loading.style.display = 'none';
-                    submitBtn.disabled = false;
+                    console.error('Error download file:', error);
+                    alert('Error al descargar el reporte. Por favor, intenta nuevamente.');
                 }
             }
-
+              
             resetForm() {
                 // Reset files
                 this.files = { breakfast: null, shifts: null };
@@ -177,8 +274,54 @@
             }
         }
 
-        // Initialize the uploader when the page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            new FileUploader();
+function dateToday(){
+    const fecha = new Date();
 
+    console.log(fecha);
+
+
+    // Formatear en YYYY-MM-DD
+    const yyyy = fecha.getFullYear();
+    const mm = String(fecha.getMonth() + 1).padStart(2, "0");
+    const dd = String(fecha.getDate() + 1).padStart(2, "0");
+
+    return `${yyyy}-${mm}-${dd}`;
+}
+
+function setDateInput(){
+    const hoy = dateToday()
+    const dateInput = document.getElementById('report-date');
+    dateInput.setAttribute('value', hoy)
+}
+
+async function wakeUpServer(){
+    try {
+        // Replace with your actual API URL
+        const res = await fetch('https://turnosdesayuno.onrender.com/wakeUp', {
+            method: 'GET'
         });
+        /*
+        const res = await fetch('http://127.0.0.1:3000/wakeUp', {
+            method: 'GET'
+        });
+        */
+        const data = await res.json();
+        if (data.conect){
+            uploaderInstance.showAlert('success', 2000, '¡Servidor operativo!');
+        }
+    } catch (error) {
+        console.error('Error server:', error);
+        alert('Error al conectar con el servidor. Por favor, intenta nuevamente.');
+    }
+}
+
+ /* exponiendo la instancia globalmente para acceso desde consola/otros scripts */
+        let uploaderInstance;
+
+// Initialize the uploader when the page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        uploaderInstance = new FileUploader();
+        wakeUpServer();
+        setDateInput();
+    });
+

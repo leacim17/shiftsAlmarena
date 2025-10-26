@@ -7,33 +7,54 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- agregando botón de manual en la esquina superior derecha -->
+    <a href="manual/manual.html" class="manual-btn">
+        <span>📖</span>
+        <span>Ayuda</span>
+    </a>
     <div class="container">
         <h1 class="title">Hola, vengo a ayudarte</h1>
-        <p class="subtitle">Arrastra los archivos correspondientes en cada cuadro o hace click para seleccionar cada uno.</p>
+        <p class="subtitle">Sube tus archivos de manera simple y rápida</p>
+
+        <div class="alert-container" id="alert-container">
+            <div class="alert" id="alert">
+                <span class="alert-icon" id="alert-icon"></span>
+                <span id="alert-message"></span>
+            </div>
+        </div>
         
         <div class="upload-section">
             <div class="drop-zone" id="breakfast-zone">
                 <div class="drop-zone-icon">🍳</div>
                 <div class="drop-zone-title">Reporte de Desayuno</div>
-                <div class="drop-zone-text">El archivo debe tener el nombre: "reporte" antes de subirse.</div>
+                <div class="drop-zone-text">Arrastra tu archivo aquí o haz clic para seleccionar</div>
                 <input type="file" class="file-input" name="reporte" id="breakfast-input" accept=".xlsx,.xls">
             </div>
             
             <div class="drop-zone" id="shifts-zone">
                 <div class="drop-zone-icon">📋</div>
                 <div class="drop-zone-title">Listado de Turnos</div>
-                <div class="drop-zone-text">El archivo debe tener el nombre: "turnos" antes de subirse.</div>
+                <div class="drop-zone-text">Arrastra tu archivo aquí o haz clic para seleccionar</div>
                 <input type="file" class="file-input" name="turnos" id="shifts-input" accept=".xlsx,.xls">
             </div>
         </div>
+
+         <!-- agregando sección de fecha -->
+        <div class="date-section">
+            <label class="date-label" for="report-date">Fecha del reporte</label>
+            <input type="date" class="date-input" id="report-date" value="1999-01-01" required>
+        </div>
         
-        <div class="submit-section">
-            <button class="submit-btn" id="submit-btn">
-                <span class="btn-text">Enviar</span>
+        <div class="button-container">
+            <button class="submit-btn" id="submit-btn" type="button">
+                <span class="btn-text">Generar</span>
                 <div class="loading">
                     <div class="spinner"></div>
-                    <span>Enviando...</span>
+                    <span>Generando...</span>
                 </div>
+            </button>
+            <button class="download-btn" id="download-btn" type="button" title="Aun no generaste ningun reporte" disabled>
+                Descargar
             </button>
         </div>
         
