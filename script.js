@@ -164,28 +164,29 @@
                     formData.append('fechaInicio', dateInput.value);
 
                     // Replace with your actual API URL
+                    
                     const res = await fetch('https://turnosdesayuno.onrender.com/uploads', {
                         method: 'POST',
                         body: formData
                     });
-                   /*
+                    /*
                     const res = await fetch('http://127.0.0.1:3000/uploads', {
                         method: 'POST',
                         body: formData
                     });
-                    */
+*/
                     const data = await res.json();
 
                     if(data.errorReporte == true){
-                        uploaderInstance.showAlert('error', 10000, "El archivo del reporte de desayuno esta mal nombrado o es de un formato que no corresponde");
+                        uploaderInstance.showAlert('error', 100000, "El archivo del reporte de desayuno esta mal nombrado o es de un formato que no corresponde");
                     }
 
                     if(data.errorTurnos == true){
-                        uploaderInstance.showAlert('error', 10000, "El archivo del listado de turnos esta mal nombrado o es de un formato que no corresponde");
+                        uploaderInstance.showAlert('error', 100000, "El archivo del listado de turnos esta mal nombrado o es de un formato que no corresponde");
                     }
                     
                     if(data.errorPax.length){
-                        uploaderInstance.showAlert('warning', 10000, "Hay una diferencia en la cantidad de pasajeros entre el reporte y el listado de turnos en las habitaciones: " + data.errorPax.join(", "));
+                        uploaderInstance.showAlert('warning', 100000, "Hay una diferencia en la cantidad de pasajeros entre la cantidad de pasajeros y los DNI ingresados en las habitaciones: " + data.errorPax.join(", "));
                     }
 
                     if(data.errorReporte == false && data.errorTurnos == false && !data.errorPax.length){
@@ -214,14 +215,16 @@
             async downloadFiles() {
                 try {
                     // Replace with your actual API URL
+                    
                     const response = await fetch('https://turnosdesayuno.onrender.com/downloadReporte', {
                         method: 'GET'
                     });
-                    /*
+                    
+/*
                     const response = await fetch('http://127.0.0.1:3000/downloadReporte', {
                         method: 'GET'
                     });
-                    */
+*/
                     const blob = await response.blob();
                     const url = window.URL.createObjectURL(blob);
                     
@@ -306,7 +309,7 @@ async function wakeUpServer(){
         */
         const data = await res.json();
         if (data.conect){
-            uploaderInstance.showAlert('success', 2000, '¡Servidor operativo!');
+            uploaderInstance.showAlert('success', 3000, '¡Servidor operativo!');
         }
     } catch (error) {
         console.error('Error server:', error);
@@ -323,5 +326,4 @@ async function wakeUpServer(){
         wakeUpServer();
         setDateInput();
     });
-
 
